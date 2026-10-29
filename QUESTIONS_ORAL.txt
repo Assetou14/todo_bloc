@@ -1,0 +1,332 @@
+QUESTIONS D'ORAL – TP FLUTTER TODO AVEC BLOC
+Réponses rédigées en phrases complètes, prêtes à être copiées.
+
+==================================================
+1. DART : LES BASES
+==================================================
+
+Q1. Quelle est la différence entre final et const ?
+R. Une variable final ne peut être affectée qu'une seule fois, mais sa valeur peut être calculée à l'exécution. Une variable const doit être connue dès la compilation, et Dart réutilise la même instance partout en mémoire.
+
+Q2. Pourquoi utilises-tu autant de constructeurs const, comme const TodoApp() ou const TodosState() ?
+R. Un widget const est créé une seule fois à la compilation. Flutter peut le réutiliser sans le reconstruire, ce qui améliore les performances.
+
+Q3. Que signifie le point d'interrogation dans Todo? lastDeletedTodo ?
+R. Cela signifie que le type est nullable : la variable peut contenir un Todo ou la valeur null. C'est le principe de la null safety de Dart.
+
+Q4. Que font les opérateurs ?? et ! ?
+R. L'opérateur ?? renvoie la valeur de droite si celle de gauche est null, par exemple title ?? this.title. L'opérateur ! affirme qu'une valeur n'est pas null ; si elle l'est quand même, l'application plante.
+
+Q5. À quoi sert le mot-clé required ?
+R. Il rend un paramètre nommé obligatoire. Par exemple, on ne peut pas créer un Todo sans lui donner un id, un titre et une date de création.
+
+Q6. Que signifie late final _controller ?
+R. late indique que la variable sera initialisée plus tard, ici dans initState. final garantit qu'elle ne sera affectée qu'une seule fois.
+
+Q7. Pourquoi tes événements sont-ils déclarés avec sealed class et final class ?
+R. sealed class signifie que toutes les sous-classes de TodosEvent sont définies dans le même fichier. Le compilateur connaît donc la liste complète des événements et peut vérifier qu'un switch n'en oublie aucun. final class empêche d'hériter de ces classes en dehors du fichier.
+
+Q8. Qu'est-ce qu'un constructeur factory, comme Todo.fromJson ?
+R. C'est un constructeur qui peut exécuter de la logique avant de renvoyer une instance. Dans mon code, Todo.fromJson lit une Map venant du stockage et la transforme en objet Todo.
+
+Q9. Que fait l'expression [...state.todos, todo] ?
+R. C'est l'opérateur spread. Il crée une nouvelle liste qui contient tous les éléments de l'ancienne, plus la nouvelle tâche. On ne modifie pas l'ancienne liste, ce qui respecte l'immuabilité de l'état.
+
+Q10. Que fait l'opérateur .. dans [...state.todos]..insert(index, deletedTodo) ?
+R. C'est l'opérateur cascade. Il appelle insert sur la liste puis renvoie la liste elle-même, et non le résultat de insert. Cela permet de créer la liste et de la modifier en une seule expression.
+
+Q11. À quoi sert l'enum TodosFilter ?
+R. Un enum définit un ensemble fermé de valeurs : all, active et completed. C'est plus sûr qu'une chaîne de caractères, car le compilateur refuse une valeur qui n'existe pas.
+
+Q12. Que fait l'expression switch (filter) { TodosFilter.all => ... } ?
+R. C'est une expression switch introduite par Dart 3. Elle renvoie directement une valeur pour chaque cas, et le compilateur vérifie que tous les cas sont traités.
+
+Q13. Pourquoi la fonction main est-elle async ?
+R. Avant de lancer l'application, il faut attendre que le stockage local de HydratedBloc soit prêt, ce qui est une opération asynchrone. Le mot-clé await permet d'attendre la fin de cette opération, et Future représente une valeur qui sera disponible plus tard.
+
+Q14. Qu'est-ce qu'un Stream ?
+R. Un Stream est une suite de valeurs qui arrivent au fil du temps. Un Bloc expose ses états sous forme de Stream, et l'interface écoute ce flux pour se mettre à jour.
+
+==================================================
+2. FLUTTER : LES BASES
+==================================================
+
+Q15. Qu'est-ce qu'un widget ?
+R. Un widget est une description immuable d'une partie de l'interface. Dans Flutter, tout est widget : un texte, un bouton, une marge ou une page entière.
+
+Q16. Quelle est la différence entre un StatelessWidget et un StatefulWidget ?
+R. Un StatelessWidget n'a pas d'état interne : il s'affiche uniquement en fonction de ses paramètres. Un StatefulWidget possède un objet State qui conserve des données entre les reconstructions.
+
+Q17. Pourquoi TodoInput est-il un StatefulWidget alors que l'état est géré par le Bloc ?
+R. Le Bloc gère l'état métier, c'est-à-dire la liste des tâches. TodoInput possède un TextEditingController, qui est un état local à l'interface. Il doit être créé une seule fois et libéré avec dispose, ce qui nécessite un StatefulWidget.
+
+Q18. Pourquoi appelles-tu _controller.dispose() ?
+R. Pour libérer les ressources utilisées par le contrôleur quand le widget est retiré de l'écran. Sans cela, on crée une fuite de mémoire.
+
+Q19. Quel est le cycle de vie d'un State ?
+R. createState crée l'objet State, initState est appelé une seule fois à l'initialisation, build est appelé à chaque reconstruction, et dispose est appelé quand le widget est définitivement retiré.
+
+Q20. Que fait la méthode build ?
+R. Elle décrit l'interface à partir de l'état actuel. Elle peut être appelée très souvent, donc elle ne doit pas contenir d'effets de bord ni de calculs lourds.
+
+Q21. Qu'est-ce que le BuildContext ?
+R. Le BuildContext représente la position d'un widget dans l'arbre. Il permet de remonter l'arbre pour récupérer le Bloc, le thème, le Navigator ou le ScaffoldMessenger.
+
+Q22. Pourquoi appelles-tu WidgetsFlutterBinding.ensureInitialized() ?
+R. Cette ligne initialise le moteur Flutter avant runApp. Elle est obligatoire ici, car getApplicationDocumentsDirectory communique avec la plateforme native avant que l'application ne soit lancée.
+
+Q23. À quoi sert runApp ?
+R. runApp prend le widget racine, ici TodoApp, et l'affiche à l'écran.
+
+Q24. Quel est le rôle de MaterialApp et de Scaffold ?
+R. MaterialApp configure l'application entière : thème, titre et navigation. Scaffold fournit la structure d'une page : la barre du haut (AppBar), le contenu (body) et l'affichage des SnackBars.
+
+Q25. À quoi servent Column, Row, Expanded, Padding, SizedBox et Wrap ?
+R. Ce sont des widgets de mise en page. Column empile verticalement, Row aligne horizontalement, Expanded occupe l'espace restant, Padding ajoute une marge, SizedBox crée un espace fixe, et Wrap passe à la ligne quand il manque de place. Je l'utilise pour les boutons de filtre.
+
+Q26. Pourquoi TodoList est-il entouré d'un Expanded ?
+R. Un ListView placé dans une Column a besoin d'une hauteur limitée. Sans Expanded, Flutter lève une erreur de hauteur non bornée (unbounded height). Expanded donne à la liste tout l'espace restant entre le champ de saisie et le footer.
+
+Q27. Pourquoi utilises-tu ListView.builder ?
+R. ListView.builder ne construit que les éléments visibles à l'écran. C'est donc beaucoup plus efficace qu'un ListView classique pour une longue liste.
+
+Q28. À quoi sert la clé ValueKey(todo.id) ?
+R. Les clés permettent à Flutter d'associer le bon widget au bon élément quand la liste change, par exemple lors d'une suppression. Le widget Dismissible exige d'ailleurs une clé unique.
+
+Q29. Quelle est la différence entre hot reload et hot restart ?
+R. Le hot reload injecte le code modifié en conservant l'état de l'application. Le hot restart relance l'application depuis le début et perd l'état.
+
+Q30. Comment gères-tu le thème clair et le thème sombre ?
+R. J'utilise ColorScheme.fromSeed avec une seule couleur de base, l'indigo, pour le thème clair et le thème sombre. Avec themeMode: ThemeMode.system, l'application suit automatiquement le réglage du téléphone.
+
+Q31. Quelle est la différence entre dependencies et dev_dependencies dans le pubspec.yaml ?
+R. Les dependencies sont embarquées dans l'application finale : flutter_bloc, equatable, hydrated_bloc et path_provider. Les dev_dependencies ne servent qu'au développement : flutter_test, bloc_test, mocktail et flutter_lints.
+
+==================================================
+3. GESTION D'ÉTAT ET PATTERN BLOC
+==================================================
+
+Q32. Qu'est-ce que la gestion d'état ?
+R. C'est la manière d'organiser les données de l'application : où elles sont stockées, qui a le droit de les modifier, et comment l'interface est prévenue quand elles changent.
+
+Q33. Que signifie BLoC ?
+R. BLoC signifie Business Logic Component. C'est un pattern qui sépare la logique métier de l'interface utilisateur.
+
+Q34. Quel est le principe de fonctionnement d'un Bloc ?
+R. L'interface envoie des événements au Bloc. Le Bloc traite chaque événement et émet un nouvel état. L'interface écoute ces états et se reconstruit. Les données circulent toujours dans le même sens : c'est un flux unidirectionnel.
+
+Q35. Quels sont les avantages du pattern BLoC ?
+R. La logique est séparée de l'interface, donc le code est mieux organisé. La logique peut être testée sans interface graphique, le comportement est prévisible, et chaque changement d'état est traçable grâce aux événements.
+
+Q36. Quels sont ses inconvénients ?
+R. Il demande plus de code qu'une solution simple comme setState : il faut écrire les événements, les états et le Bloc. Pour une toute petite application, cela peut sembler lourd.
+
+Q37. Quelle est la différence entre un Bloc et un Cubit ?
+R. Un Cubit expose des méthodes qui appellent emit directement, sans événements. Un Bloc reçoit des événements et les traite dans des handlers. Le Bloc est plus verbeux mais plus traçable, et il permet de contrôler la façon dont les événements sont traités.
+
+Q38. Pourquoi ne pas utiliser simplement setState ?
+R. L'état de ma liste est partagé entre plusieurs widgets et plusieurs écrans : la liste, le footer et la page d'édition. Avec setState, l'état resterait local à un widget, et la logique serait mélangée à l'interface.
+
+Q39. Pourquoi l'état doit-il être immuable ?
+R. Le Bloc compare l'ancien état au nouveau pour savoir s'il faut mettre à jour l'interface. Si on modifiait la liste directement, l'ancien et le nouveau état seraient le même objet, et l'interface ne se mettrait pas à jour. C'est pour cela que je crée toujours une nouvelle liste.
+
+Q40. Quelles autres solutions de gestion d'état connais-tu ?
+R. Provider, Riverpod, GetX, MobX et Redux.
+
+==================================================
+4. L'API FLUTTER_BLOC
+==================================================
+
+Q41. À quoi sert BlocProvider ?
+R. BlocProvider crée le Bloc et le rend accessible à tous les widgets placés en dessous dans l'arbre. Il ferme aussi automatiquement le Bloc quand il est retiré de l'écran.
+
+Q42. Pourquoi as-tu placé le BlocProvider au-dessus de MaterialApp ?
+R. Les pages ouvertes avec Navigator.push ne sont pas des enfants de la page d'accueil, mais des pages sœurs dans l'arbre. Si le BlocProvider était sous MaterialApp, la page d'édition ne pourrait pas trouver le Bloc. En le plaçant au-dessus, le Bloc est accessible depuis tous les écrans.
+
+Q43. À quoi sert BlocBuilder ?
+R. BlocBuilder reconstruit une partie de l'interface à chaque fois que le Bloc émet un nouvel état. Je l'utilise pour afficher la liste des tâches et le footer.
+
+Q44. À quoi sert BlocListener ?
+R. BlocListener exécute une action une seule fois à chaque changement d'état, sans reconstruire l'interface. Il sert aux effets de bord, comme afficher un SnackBar, naviguer ou ouvrir une boîte de dialogue.
+
+Q45. Pourquoi le SnackBar est-il dans un BlocListener et non dans un BlocBuilder ?
+R. La méthode build peut être appelée plusieurs fois pour un même état. Si j'affichais le SnackBar dans un BlocBuilder, il pourrait apparaître plusieurs fois. Le BlocListener garantit qu'il s'affiche une seule fois par suppression.
+
+Q46. Qu'est-ce que BlocConsumer ?
+R. BlocConsumer combine un BlocBuilder et un BlocListener dans un seul widget.
+
+Q47. À quoi sert buildWhen dans TodosFooter ?
+R. buildWhen limite les reconstructions. Le footer ne se reconstruit que si le nombre de tâches restantes, le filtre ou la présence de tâches terminées change. Par exemple, modifier le titre d'une tâche ne reconstruit pas le footer.
+
+Q48. À quoi sert listenWhen dans TodosPage ?
+R. listenWhen indique quand le listener doit réagir. Ici, le SnackBar ne s'affiche que si lastDeletedTodo n'est pas null et vient de changer, c'est-à-dire juste après une suppression.
+
+Q49. Quelle est la différence entre context.read et context.watch ?
+R. context.read récupère le Bloc sans s'abonner à ses changements : on l'utilise dans les callbacks comme onPressed. context.watch s'abonne au Bloc et reconstruit le widget à chaque changement : on l'utilise dans build. Il ne faut jamais utiliser watch dans un callback.
+
+Q50. Que fait bloc.add(event) ?
+R. Cette méthode envoie un événement au Bloc pour qu'il le traite.
+
+Q51. Que fait on<TodoAdded>(_onTodoAdded) dans le constructeur du Bloc ?
+R. Elle associe un type d'événement à la méthode qui le traite. Quand un événement TodoAdded arrive, le Bloc appelle _onTodoAdded.
+
+Q52. Qu'est-ce que l'Emitter et la fonction emit ?
+R. emit publie un nouvel état. Toute l'interface qui écoute le Bloc est alors prévenue. emit ne doit être appelé qu'à l'intérieur du handler de l'événement.
+
+Q53. Que se passe-t-il si le Bloc émet un état identique à l'état actuel ?
+R. Le Bloc l'ignore et l'interface n'est pas reconstruite. Grâce à Equatable, deux états qui ont les mêmes valeurs sont considérés comme égaux. Par exemple, sélectionner un filtre déjà actif ne provoque aucune reconstruction.
+
+==================================================
+5. LE MODÈLE ET L'ÉTAT
+==================================================
+
+Q54. Pourquoi la classe Todo étend-elle Equatable ?
+R. Equatable permet de comparer deux objets par leurs valeurs et non par leur adresse en mémoire. Deux Todo qui ont le même id, le même titre, le même statut et la même date sont considérés comme égaux, sans réécrire l'opérateur == ni hashCode à la main.
+
+Q55. À quoi sert la propriété props ?
+R. props liste les champs utilisés par Equatable pour comparer deux objets.
+
+Q56. À quoi sert la méthode copyWith ?
+R. Les objets sont immuables, donc on ne peut pas modifier leurs champs. copyWith crée une copie de l'objet en changeant seulement les champs voulus. Par exemple, todo.copyWith(isDone: true) renvoie une nouvelle tâche marquée comme terminée.
+
+Q57. Pourquoi id et createdAt ne sont-ils pas modifiables dans copyWith ?
+R. L'identifiant et la date de création d'une tâche ne doivent jamais changer. Seuls le titre et le statut peuvent être modifiés.
+
+Q58. Comment génères-tu l'identifiant d'une tâche ?
+R. J'utilise DateTime.now().microsecondsSinceEpoch, c'est-à-dire le nombre de microsecondes écoulées depuis 1970. Les collisions sont pratiquement impossibles en utilisation normale. Pour une application plus robuste, on pourrait utiliser le package uuid.
+
+Q59. Pourquoi visibleTodos, activeCount et hasCompletedTodos sont-ils des getters et non des champs ?
+R. Ce sont des données dérivées : elles se calculent à partir de la liste des tâches et du filtre. En les calculant au lieu de les stocker, on évite d'avoir deux fois la même information et donc des incohérences.
+
+Q60. Pourquoi lastDeletedTodo et lastDeletedIndex sont-ils dans l'état ?
+R. Pour pouvoir annuler une suppression. Je garde la tâche supprimée et sa position, ce qui permet de la remettre exactement à sa place d'origine.
+
+Q61. Pourquoi crées-tu un nouveau TodosState dans _onTodoDeleted au lieu d'utiliser copyWith ?
+R. Mon copyWith conserve toujours lastDeletedTodo et lastDeletedIndex. Pour définir ces valeurs lors d'une suppression, ou les remettre à null après une annulation, je dois construire l'état directement.
+
+Q62. Pourquoi utilises-tu index.clamp(0, state.todos.length) lors de l'annulation ?
+R. Si la liste a raccourci entre la suppression et l'annulation, l'index d'origine pourrait dépasser la taille de la liste et provoquer une erreur. clamp garantit que l'index reste dans les limites valides.
+
+==================================================
+6. LES FONCTIONNALITÉS
+==================================================
+
+Q63. F1 – Comment empêches-tu l'ajout d'une tâche vide ?
+R. Dans le Bloc, j'applique trim() au titre pour retirer les espaces. Si le titre est vide, je fais return sans émettre d'état. La validation est dans la logique métier, ce qui la rend testable.
+
+Q64. F2 – Explique ce qui se passe quand on coche une tâche.
+R. Quand l'utilisateur coche la Checkbox, le widget envoie l'événement TodoToggled avec l'id de la tâche. Le Bloc parcourt la liste avec map, crée une copie de la tâche concernée avec isDone inversé grâce à copyWith, puis émet un nouvel état avec cette nouvelle liste. Le BlocBuilder de TodoList reçoit le nouvel état et se reconstruit : le titre apparaît barré. Le footer se met aussi à jour, car le nombre de tâches restantes a changé.
+
+Q65. F3 – Comment peut-on supprimer une tâche ?
+R. De deux façons : avec le bouton corbeille, ou en faisant glisser la tâche de droite à gauche grâce au widget Dismissible. Dans les deux cas, l'événement TodoDeleted est envoyé au Bloc.
+
+Q66. Comment fonctionne l'annulation d'une suppression ?
+R. Quand une tâche est supprimée, le Bloc enregistre la tâche et sa position dans l'état. Le BlocListener détecte ce changement et affiche un SnackBar avec un bouton Annuler. Si l'utilisateur clique dessus, l'événement TodoDeletionUndone est envoyé, et le Bloc réinsère la tâche à sa position d'origine.
+
+Q67. Pourquoi as-tu mis duration: 7 secondes et persist: false sur le SnackBar ?
+R. Par défaut, un SnackBar qui contient une action reste affiché. Avec persist: false et une durée de 7 secondes, il disparaît automatiquement.
+
+Q68. Pourquoi appelles-tu hideCurrentSnackBar() avant showSnackBar() ?
+R. Si l'utilisateur supprime plusieurs tâches d'affilée, cela évite d'accumuler une file de SnackBars. Seul le dernier s'affiche.
+
+Q69. F4 – Comment l'écran d'édition modifie-t-il une tâche ?
+R. La page d'édition récupère le Bloc avec context.read<TodosBloc>(). C'est possible parce que le BlocProvider est au-dessus de MaterialApp. Elle envoie l'événement TodoEdited avec l'id et le nouveau titre, puis ferme la page avec Navigator.pop().
+
+Q70. Pourquoi as-tu une méthode statique TodoEditPage.route(todo) ?
+R. Elle regroupe la création de la route dans la page elle-même. L'appel devient plus simple et plus lisible : Navigator.of(context).push(TodoEditPage.route(todo)).
+
+Q71. Comment fonctionne la navigation avec Navigator.push et Navigator.pop ?
+R. Le Navigator gère une pile d'écrans. push ajoute un nouvel écran au sommet de la pile, et pop retire l'écran actuel pour revenir au précédent.
+
+Q72. F5 – Où se fait le filtrage des tâches ?
+R. Dans le getter visibleTodos de l'état. Le filtre est stocké dans le champ filter, et la liste complète des tâches n'est jamais modifiée. Seul l'affichage change selon le filtre choisi.
+
+Q73. F6 – Comment gères-tu le singulier et le pluriel du compteur ?
+R. Si le nombre est inférieur ou égal à 1, j'affiche « tâche restante » au singulier ; sinon, « tâches restantes » au pluriel. En français, 0 s'écrit au singulier.
+
+Q74. F7 – Comment fonctionne le bouton « Vider les terminées » ?
+R. Il n'apparaît que s'il existe au moins une tâche terminée, grâce au getter hasCompletedTodos. Au clic, l'événement CompletedTodosCleared est envoyé, et le Bloc ne garde que les tâches non terminées.
+
+Q75. F8 – Comment gères-tu l'état vide ?
+R. Si la liste visible est vide, j'affiche une icône et un message adapté au filtre actif : « Aucune tâche pour le moment », « Aucune tâche en cours » ou « Aucune tâche terminée ».
+
+==================================================
+7. PERSISTANCE AVEC HYDRATEDBLOC
+==================================================
+
+Q76. Que fait HydratedBloc ?
+R. HydratedBloc sauvegarde automatiquement l'état du Bloc sur le disque à chaque émission d'état, et le restaure au démarrage. Les tâches sont donc conservées quand on ferme l'application.
+
+Q77. Quel est le rôle des méthodes toJson et fromJson dans le Bloc ?
+R. toJson convertit l'état en Map pour qu'il soit enregistré. fromJson fait l'inverse au démarrage : il lit la Map enregistrée et reconstruit l'état.
+
+Q78. Pourquoi ne sauvegardes-tu que la liste des tâches ?
+R. Le filtre et la dernière tâche supprimée sont des informations temporaires. Il n'y a pas de sens à proposer « Annuler » après avoir redémarré l'application.
+
+Q79. Pourquoi utilises-tu kIsWeb dans le main ?
+R. Sur le web, il n'y a pas de système de fichiers classique, donc HydratedBloc utilise le stockage du navigateur avec HydratedStorageDirectory.web. Sur mobile et sur ordinateur, j'utilise le dossier Documents de l'appareil, obtenu avec path_provider.
+
+Q80. Pourquoi enregistres-tu la date avec toIso8601String() ?
+R. Le format JSON n'a pas de type date. Je convertis donc la date en chaîne de caractères au format standard ISO 8601, puis je la relis avec DateTime.parse.
+
+Q81. Que se passe-t-il si les données sauvegardées sont corrompues ?
+R. HydratedBloc intercepte l'erreur levée par fromJson et repart de l'état initial, c'est-à-dire une liste vide.
+
+Q82. Pourquoi le constructeur du Bloc accepte-t-il un paramètre storage ?
+R. Cela permet d'injecter un faux stockage dans les tests. Les tests n'écrivent donc pas sur le vrai disque.
+
+==================================================
+8. LES TESTS
+==================================================
+
+Q83. Quels tests as-tu écrits ?
+R. J'ai écrit des tests unitaires du Bloc avec le package bloc_test, qui vérifient l'ajout, le refus d'un titre vide, le changement de statut et la suppression des tâches terminées. J'ai aussi un test de widget qui vérifie que l'application démarre et affiche les bons textes.
+
+Q84. Quel est le rôle de build, seed, act et expect dans blocTest ?
+R. build crée le Bloc à tester. seed définit l'état de départ. act envoie un ou plusieurs événements. expect décrit la liste des états que le Bloc doit émettre.
+
+Q85. Pourquoi expect renvoie-t-il une liste vide pour un titre composé d'espaces ?
+R. Parce que le Bloc ne doit émettre aucun état quand le titre est vide. Une liste vide vérifie justement qu'aucun état n'a été émis.
+
+Q86. Pourquoi utilises-tu MockStorage avec mocktail ?
+R. Pour simuler le stockage sans écrire sur le vrai disque. Les tests sont ainsi isolés, rapides et reproductibles. La ligne when(...).thenReturn(null) simule un stockage vide au démarrage.
+
+Q87. Pourquoi utilises-tu isA<TodosState>().having(...) au lieu de comparer l'état complet ?
+R. L'id et la date de création sont générés à partir de l'heure actuelle, je ne peux donc pas prévoir leur valeur exacte. having permet de vérifier seulement certains champs, comme le titre ou le statut.
+
+Q88. Quelle est la différence entre un test unitaire, un test de widget et un test d'intégration ?
+R. Un test unitaire vérifie une classe ou une fonction isolée, comme le Bloc. Un test de widget vérifie l'affichage et les interactions d'un widget dans un environnement simulé. Un test d'intégration teste l'application complète sur un vrai appareil ou un émulateur.
+
+Q89. Quelle commande lance les tests ?
+R. La commande flutter test.
+
+==================================================
+9. QUESTIONS PIÈGES ET AMÉLIORATIONS
+==================================================
+
+Q90. Pourquoi utilises-tu context.read et non context.watch dans TodoTile ?
+R. Dans TodoTile, le Bloc ne sert qu'à envoyer des événements dans les callbacks. La tuile est déjà reconstruite par le BlocBuilder de TodoList, donc il n'est pas nécessaire de s'abonner une deuxième fois.
+
+Q91. Que se passe-t-il si un Dismissible reste dans l'arbre après avoir été glissé ?
+R. Flutter lève une erreur indiquant qu'un Dismissible supprimé est toujours dans l'arbre. Dans mon application, cela n'arrive pas, car le Bloc retire immédiatement la tâche de la liste.
+
+Q92. Pourquoi y a-t-il deux clés différentes, une sur la tuile et une sur le Dismissible ?
+R. Chaque clé doit être unique à son niveau de l'arbre. J'utilise ValueKey(todo.id) pour la tuile dans la liste, et une clé préfixée par « dismissible- » pour le Dismissible.
+
+Q93. Peut-on enregistrer un titre vide depuis la page d'édition ?
+R. Non. La page affiche un message d'erreur et n'envoie pas l'événement. De plus, le Bloc ignore lui aussi les titres vides. Il y a donc une double sécurité.
+
+Q94. Comment ajouterais-tu une API distante ?
+R. Je créerais un TodosRepository chargé de communiquer avec l'API, et je l'injecterais dans le Bloc. Les handlers deviendraient asynchrones et appelleraient le repository avec await. Le Bloc ne doit pas faire d'appels HTTP directement.
+
+Q95. Comment organiserais-tu l'architecture si l'application grandissait ?
+R. Je séparerais l'application en trois couches : la présentation avec les widgets, la logique avec les Blocs, et les données avec les repositories et les sources de données. Mon projet est déjà organisé par fonctionnalité, avec les dossiers bloc, models et view dans todos.
+
+Q96. Quelles améliorations pourrais-tu apporter ?
+R. Je pourrais ajouter le tri ou le réordonnancement des tâches, des dates d'échéance, une recherche, des identifiants générés avec uuid, davantage de tests de widgets, et la traduction de l'application dans plusieurs langues.
+
+Q97. Que se passe-t-il si deux événements arrivent en même temps ?
+R. Par défaut, les handlers d'événements de types différents peuvent s'exécuter en parallèle. On peut contrôler ce comportement avec le paramètre transformer et le package bloc_concurrency, par exemple pour traiter les événements les uns après les autres avec sequential.
+
+Q98. Qui ferme le Bloc ?
+R. Le BlocProvider ferme automatiquement le Bloc quand il est retiré de l'arbre. Si on crée un Bloc soi-même sans BlocProvider, c'est à nous d'appeler close().
