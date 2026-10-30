@@ -15,8 +15,17 @@ class _TodoInputState extends State<TodoInput> {
   final _controller = TextEditingController();
 
   void _submit() {
+    final bloc = context.read<TodosBloc>();
+    if (bloc.state.hasTodoWithTitle(_controller.text)) {
+      // On garde le texte saisi pour que l'utilisateur puisse le corriger.
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Une tâche porte déjà ce titre.')),
+      );
+      return;
+    }
+
     // Le Bloc nettoie le titre et ignore un titre vide (F1).
-    context.read<TodosBloc>().add(TodoAdded(_controller.text));
+    bloc.add(TodoAdded(_controller.text));
     _controller.clear();
   }
 

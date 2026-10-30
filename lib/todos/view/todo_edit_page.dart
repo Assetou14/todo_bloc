@@ -35,10 +35,19 @@ class _TodoEditPageState extends State<TodoEditPage> {
       return;
     }
 
+    final bloc = context.read<TodosBloc>();
+    if (bloc.state.hasTodoWithTitle(
+      _controller.text,
+      exceptId: widget.todo.id,
+    )) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Une tâche porte déjà ce titre.')),
+      );
+      return;
+    }
+
     // Le Bloc est créé au-dessus de MaterialApp : il est accessible ici.
-    context.read<TodosBloc>().add(
-      TodoEdited(id: widget.todo.id, title: _controller.text),
-    );
+    bloc.add(TodoEdited(id: widget.todo.id, title: _controller.text));
     Navigator.of(context).pop();
   }
 

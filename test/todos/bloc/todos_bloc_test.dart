@@ -40,6 +40,31 @@ void main() {
     );
 
     blocTest<TodosBloc, TodosState>(
+      'TodoAdded avec un titre déjà existant n\'émet aucun état',
+      build: () => TodosBloc(storage: storage),
+      seed: () => TodosState(
+        todos: [
+          Todo(id: '1', title: 'Réviser', createdAt: DateTime(2026, 10, 26)),
+        ],
+      ),
+      act: (bloc) => bloc.add(const TodoAdded('  réviser ')),
+      expect: () => <TodosState>[],
+    );
+
+    blocTest<TodosBloc, TodosState>(
+      'TodoEdited vers le titre d\'une autre tâche n\'émet aucun état',
+      build: () => TodosBloc(storage: storage),
+      seed: () => TodosState(
+        todos: [
+          Todo(id: '1', title: 'A', createdAt: DateTime(2026, 10, 26)),
+          Todo(id: '2', title: 'B', createdAt: DateTime(2026, 10, 26)),
+        ],
+      ),
+      act: (bloc) => bloc.add(const TodoEdited(id: '2', title: 'a')),
+      expect: () => <TodosState>[],
+    );
+
+    blocTest<TodosBloc, TodosState>(
       'TodoToggled puis CompletedTodosCleared vide la liste',
       build: () => TodosBloc(storage: storage),
       seed: () => TodosState(

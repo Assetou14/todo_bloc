@@ -34,6 +34,14 @@ class TodosState extends Equatable {
 
   bool get hasCompletedTodos => todos.any((todo) => todo.isDone);
 
+  // Vrai si une autre tâche porte déjà ce titre (majuscules et espaces ignorés).
+  bool hasTodoWithTitle(String title, {String? exceptId}) {
+    final normalized = title.trim().toLowerCase();
+    return todos.any(
+      (todo) => todo.id != exceptId && todo.title.toLowerCase() == normalized,
+    );
+  }
+
   TodosState copyWith({List<Todo>? todos, TodosFilter? filter}) {
     return TodosState(
       todos: todos ?? this.todos,

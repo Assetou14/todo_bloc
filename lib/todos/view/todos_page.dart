@@ -41,12 +41,17 @@ class TodosPage extends StatelessWidget {
           title: const Text('Ma liste de tâches'),
           centerTitle: true,
         ),
-        body: const Column(
-          children: [
-            Padding(padding: EdgeInsets.all(16), child: TodoInput()),
-            Expanded(child: TodoList()),
-            Padding(padding: EdgeInsets.all(12), child: TodosFooter()),
-          ],
+        // SafeArea évite que le pied de page passe sous la barre de
+        // navigation Android (edge-to-edge). L'AppBar gère déjà le haut.
+        body: const SafeArea(
+          top: false,
+          child: Column(
+            children: [
+              Padding(padding: EdgeInsets.all(16), child: TodoInput()),
+              Expanded(child: TodoList()),
+              Padding(padding: EdgeInsets.all(12), child: TodosFooter()),
+            ],
+          ),
         ),
       ),
     );

@@ -17,7 +17,7 @@ class TodosBloc extends HydratedBloc<TodosEvent, TodosState> {
 
   void _onTodoAdded(TodoAdded event, Emitter<TodosState> emit) {
     final title = event.title.trim();
-    if (title.isEmpty) return;
+    if (title.isEmpty || state.hasTodoWithTitle(title)) return;
 
     final now = DateTime.now();
     final todo = Todo(
@@ -71,7 +71,9 @@ class TodosBloc extends HydratedBloc<TodosEvent, TodosState> {
 
   void _onTodoEdited(TodoEdited event, Emitter<TodosState> emit) {
     final title = event.title.trim();
-    if (title.isEmpty) return;
+    if (title.isEmpty || state.hasTodoWithTitle(title, exceptId: event.id)) {
+      return;
+    }
 
     final updatedTodos = state.todos.map((todo) {
       if (todo.id == event.id) {
